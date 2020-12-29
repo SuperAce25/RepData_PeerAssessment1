@@ -1,3 +1,10 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
 Project 1 of the Reproducible Research Course
 =============================================
 Load the packages we will need:
@@ -32,7 +39,7 @@ tot_steps <- summarise(group_by(monitor_data, date), total_steps = sum(steps,
 hist(tot_steps$total_steps, main = 'Total Steps Taken', xlab = 'Steps per day')
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 Now we calculate the mean and the median:
 
@@ -62,7 +69,7 @@ And create a lineplot with time vs steps:
 plot(steps_interval$interval, steps_interval$steps_mean, type = 'l', ylab = 'Steps', xlab = 'time (minutes)')
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 Finally we find the interval with the maximum number of steps:
 
@@ -137,7 +144,7 @@ total_steps_day <- summarise(group_by(copydata, date), total_steps = sum(steps, 
 hist(total_steps_day$total_steps, main = 'Total Steps Taken Without Missing Data', xlab = 'Steps per day')
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 ```r
 mean_na_steps = mean(total_steps_day$total_steps)
@@ -179,6 +186,6 @@ weekdays_sum <- transform(weekdays_sum, daytype = factor(daytype))
 xyplot(mean_steps ~ interval | daytype, data = weekdays_sum, layout = c(1,2), type = 'l')
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 The last plot shows a clear difference between weekdays and weekends, while the beginning of a weekday is clearly more activity than the weekend, during the rest of the day the weekends are more active.
