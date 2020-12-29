@@ -26,20 +26,19 @@ monitor_data <- readr::read_csv('activity.zip')
 Now we show an histogram of the total number of steps taken each day:
 
 ```{r, message = FALSE}
-tot_steps <- summarise(group_by(monitor_data, date), total_steps = sum(steps,
-                                                               na.rm = TRUE))
+total_steps <- aggregate(steps ~ date, data = monitor_data, FUN = sum, na.rm = TRUE)
 ```
 
 
 ```{r}
-hist(tot_steps$total_steps, main = 'Total Steps Taken', xlab = 'Steps per day')
+hist(total_steps$steps, main = 'Total Steps Taken per day', xlab = 'Steps per day', breaks = 10)
 ```
 
 Now we calculate the mean and the median:
 
 ```{r}
-mean_steps <- mean(tot_steps$total_steps)
-median_steps <- median(tot_steps$total_steps)
+mean_steps <- mean(total_steps$steps)
+median_steps <- median(total_steps$steps)
 ```
 
 The median steps taken per day is **`r median_steps`**
@@ -51,6 +50,7 @@ The mean of steps taken per day is **`r mean_steps`**.
 First we summarise the steps data of each 5-minute interval across all days.
 
 ```{r, message = FALSE}
+
 steps_interval <- summarise(group_by(monitor_data, interval),steps_mean = mean(steps, na.rm = TRUE))
 
 ```
@@ -95,11 +95,11 @@ interval_mean <- function(interval){
 Then we create a copy of the original dataset and use a for loop to replace the NAs in the data.
 
 ```{r, cache=TRUE}
-copydata <- monitor_data
-for (i in 1:nrow(copydata)){
-  if (is.na(copydata[i,1])){
-    interval = copydata[[i,3]]
-    copydata[i,1] <- as.list(interval_mean(interval))
+fulldata <- monitor_data
+for (i in 1:nrow(fulldata)){
+  if (is.na(fulldata[i,1])){
+    interval = fulldata[[i,3]]
+    fulldata[i,1] <- as.list(interval_mean(interval))
     }
 }
 ```
@@ -107,15 +107,15 @@ for (i in 1:nrow(copydata)){
 To confirm the operation we print a summary of the corrected data.
 
 ```{r}
-summary(copydata)
+summary(fulldata)
 ```
 
 As before, we create a histogram of the total number of steps taken each day.
 
 ```{r, message = FALSE}
-total_steps_day <- summarise(group_by(copydata, date), total_steps = sum(steps, na.rm = TRUE))
+total_steps_day <- summarise(group_by(fulldata, date), total_steps = sum(steps, na.rm = TRUE))
 
-hist(total_steps_day$total_steps, main = 'Total Steps Taken Without Missing Data', xlab = 'Steps per day')
+hist(total_steps_day$total_steps, main = 'Total Steps Taken Without Missing Data', xlab = 'Steps per day', breaks = 10)
 
 mean_na_steps = mean(total_steps_day$total_steps)
 median_na_steps = median(total_steps_day$total_steps)
@@ -123,11 +123,11 @@ median_na_steps = median(total_steps_day$total_steps)
 
 
 
-The mean of the data without NAs is **`r mean_na_steps`**, it increased from the original value: **`r mean_steps`**.
+The mean of the data without NAs is **`r mean_na_steps`**, the same as before because we use the mean to replace the missing data.
 
-The median of the data without NAs is **`r median_na_steps`**, it increased also from **`r median_steps`**.
+The median of the data without NAs is **`r median_na_steps`**, it increased slightly from the original.
 
-Depending of the method used to replace the data, it can change its statistics, in this case the mean became equal to the median of the data and both increased in value.
+Depending of the method used to replace the data, it can change its statistics, in this case the mean became equal to the median of the data and the median increased a little.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 

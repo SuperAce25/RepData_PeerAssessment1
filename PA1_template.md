@@ -29,29 +29,28 @@ Now we show an histogram of the total number of steps taken each day:
 
 
 ```r
-tot_steps <- summarise(group_by(monitor_data, date), total_steps = sum(steps,
-                                                               na.rm = TRUE))
+total_steps <- aggregate(steps ~ date, data = monitor_data, FUN = sum, na.rm = TRUE)
 ```
 
 
 
 ```r
-hist(tot_steps$total_steps, main = 'Total Steps Taken', xlab = 'Steps per day')
+hist(total_steps$steps, main = 'Total Steps Taken per day', xlab = 'Steps per day', breaks = 10)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png)
 
 Now we calculate the mean and the median:
 
 
 ```r
-mean_steps <- mean(tot_steps$total_steps)
-median_steps <- median(tot_steps$total_steps)
+mean_steps <- mean(total_steps$steps)
+median_steps <- median(total_steps$steps)
 ```
 
-The median steps taken per day is **10395**
+The median steps taken per day is **10765**
 
-The mean of steps taken per day is **9354.23**.
+The mean of steps taken per day is **10766.19**.
 
 ## What is the average daily activity pattern?
 
@@ -69,7 +68,7 @@ And create a lineplot with time vs steps:
 plot(steps_interval$interval, steps_interval$steps_mean, type = 'l', ylab = 'Steps', xlab = 'time (minutes)')
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
 
 Finally we find the interval with the maximum number of steps:
 
@@ -109,11 +108,11 @@ Then we create a copy of the original dataset and use a for loop to replace the 
 
 
 ```r
-copydata <- monitor_data
-for (i in 1:nrow(copydata)){
-  if (is.na(copydata[i,1])){
-    interval = copydata[[i,3]]
-    copydata[i,1] <- as.list(interval_mean(interval))
+fulldata <- monitor_data
+for (i in 1:nrow(fulldata)){
+  if (is.na(fulldata[i,1])){
+    interval = fulldata[[i,3]]
+    fulldata[i,1] <- as.list(interval_mean(interval))
     }
 }
 ```
@@ -122,7 +121,7 @@ To confirm the operation we print a summary of the corrected data.
 
 
 ```r
-summary(copydata)
+summary(fulldata)
 ```
 
 ```
@@ -139,12 +138,12 @@ As before, we create a histogram of the total number of steps taken each day.
 
 
 ```r
-total_steps_day <- summarise(group_by(copydata, date), total_steps = sum(steps, na.rm = TRUE))
+total_steps_day <- summarise(group_by(fulldata, date), total_steps = sum(steps, na.rm = TRUE))
 
-hist(total_steps_day$total_steps, main = 'Total Steps Taken Without Missing Data', xlab = 'Steps per day')
+hist(total_steps_day$total_steps, main = 'Total Steps Taken Without Missing Data', xlab = 'Steps per day', breaks = 10)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png)
 
 ```r
 mean_na_steps = mean(total_steps_day$total_steps)
@@ -153,11 +152,11 @@ median_na_steps = median(total_steps_day$total_steps)
 
 
 
-The mean of the data without NAs is **10766.19**, it increased from the original value: **9354.23**.
+The mean of the data without NAs is **10766.19**, the same as before because we use the mean to replace the missing data.
 
-The median of the data without NAs is **10766.19**, it increased also from **10395**.
+The median of the data without NAs is **10766.19**, it increased slightly from the original.
 
-Depending of the method used to replace the data, it can change its statistics, in this case the mean became equal to the median of the data and both increased in value.
+Depending of the method used to replace the data, it can change its statistics, in this case the mean became equal to the median of the data and the median increased a little.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -186,6 +185,6 @@ weekdays_sum <- transform(weekdays_sum, daytype = factor(daytype))
 xyplot(mean_steps ~ interval | daytype, data = weekdays_sum, layout = c(1,2), type = 'l')
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
 
 The last plot shows a clear difference between weekdays and weekends, while the beginning of a weekday is clearly more activity than the weekend, during the rest of the day the weekends are more active.
